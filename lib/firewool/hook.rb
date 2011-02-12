@@ -2,8 +2,8 @@ p "Hook loaded."
 
 module Firewool::Hook
   
-  def baz
-    "Firewool::Hook#baz"
+  def ip_filter
+    "Magic happens here in Firewool::Hook#ip_filter"
   end
   
   # def acts_as_awesome(*args)
