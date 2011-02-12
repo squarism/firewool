@@ -1,0 +1,3 @@
+module Firewool
+  # Your code goes here...
+end
