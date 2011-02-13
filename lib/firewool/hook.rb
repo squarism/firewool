@@ -1,6 +1,17 @@
 p "Hook loaded."
 
 module Firewool::Hook
+  FIREWOOL_CONFIG = YAML.load_file("#{Rails.root.to_s}/config/firewool_config.yml")
+    
+  def load_config
+      firewool_config = "AWESOME"
+  end
+
+  def self.extended(base)
+    puts "Hook INCLUDED."
+    # self.load_config
+  end
+  
   
   def ip_filter
     "Magic happens here in Firewool::Hook#ip_filter"

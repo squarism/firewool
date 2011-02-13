@@ -2,10 +2,11 @@ require 'active_support/core_ext'
 #require 'ipaddress'
 
 p "loading main"
+
 require File.join(File.dirname(__FILE__), "firewool/railtie.rb")
 
 module Firewool
-
+    
   def bar
     "Firewool#bar method ..."
   end
