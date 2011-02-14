@@ -1,20 +1,26 @@
 == Firewool
-Firewool is an ip filter for rails.  Uses a white-list, then a black-list and the client's IP to filter.  Of course, IPs can be spoofed, so be careful crossing the street.
+Firewool is an IP firewall for rails.  You set what IPs to block and what IPs to allow.  Specifics below.
 
 == Why would I need this?
-  - A layer 7 firewall is too expensive.
-  - Anonymous authentication doesn't equate to all access authorization.
-  - Belt and suspenders style double security check.
+- A layer 7 firewall is too expensive.
+- Anonymous authentication doesn't equate to all access authorization.
+- Belt and suspenders style double security check.
 
 == Install
 gem install firewool
 
+Tested on rails 3.0.4.
+Untested on rails 2.  Engines?
+
 == Configuration
-Add firewool to Gemfile
+Add firewool to Gemfile:
+  gem 'firewool'
+  
 Create a configuration file in config/firewool.yml
 
 	# config/firewool.yml
 	# changing any valves requires app server restart (apache/webrick/etc)
+	
 	development:
 	    ip_restriction: true
 	    allow: [ 192.168.0.0/16 ]
@@ -44,11 +50,36 @@ Firewool has an implicit deny.  This means that Firewool does the following eval
   Allow all in allow list
   Deny all in deny list
 
-This allows you to have security by default, a whitelist and then exceptions to that whitelist.
+This allows you to have security by default, a whitelist and then exceptions to that whitelist.  However, sometimes you want a default allow and only exceptions to that rule.  In that case, use an allow like this:
+  allow: [0.0.0.0]
 
-However, sometimes you want a default allow and only exceptions to that rule.  In that case, use an allow like this:
-allow: [0.0.0.0]
+IPs can be spoofed so in the case of strong security, you'll want to use this with one or more factor authentication.
 
+== Quick Network Primer
+So how do I write the rules when I'm not a network guy?  No problem, let's go through some examples.
+
+First, the IP is four numbers separated by periods.  Each number is called an ocet.  The slash number (like /16 up above) is how many octets match.  So to match every usable IP from 10.0.0.1 to 10.0.0.254, we can just say:
+  10.0.0.0/24 (matches 10.0.0.*)
+    10.0.0.1      (match)
+    10.0.0.204    (match)
+    10.0.1.1      (no match)
+    7.8.9.10      (no match)
+
+If we just want to match one IP we can use the /32 or just specify the IP by itself.
+  192.168.0.1/32  (matches only 192.168.0.1)
+  192.168.0.1     (matches only 192.168.0.1, same meaning as /32)
+  5.0.0.0/8       (matches 5.*.*.*)
+  5.6.0.0/16      (matches 5.6.*.*)
+  5.6.0.0/24      (matches 5.6.0.*)
+  5.6.7.0/24      (matches 5.6.7.*)
+    
+These are the simplest examples of this notation (called CIDR if you want to read more) but it's enough to build a few use cases.  Let's say we want to allow anyone from our company network but block anyone coming from China.  Our company's external network is 5.6.7.* (ie: what users see when they go to whatismyip.com from inside their network) and let's say that China's national proxy is 58.14.0.0.  This would be our firewool.yml config:
+  production:
+    ip_restriction: true
+    allow: [ 5.6.7.0/24 ]
+    deny:  [ 58.14.0.0/16 ]
+    
+Now we'd want to be careful that 5.6.7.* was really where our users are coming from.  If people that we want to keep out are coming from 5.6.7.200 then we'd want to tighten up our rule a little bit and not allow all of the 5.6.7.0 network in.  Maybe we research what our IP block really is, or add only the IPs we know about as /32 IPs.
 
 == Thanks to
 Bluemonk for his awesome ipaddress gem.
