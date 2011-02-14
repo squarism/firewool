@@ -1,7 +1,7 @@
 require 'active_support/core_ext'
-#require 'ipaddress'
+require 'ipaddress'
 
-p "loading main"
+# p "loading main"
 
 require File.join(File.dirname(__FILE__), "firewool/railtie.rb")
 
