@@ -13,11 +13,15 @@ module Firewool::Hook
   # TODO: opinionated.  provide instructions on how to forget about this filter
   # and redirect to their own thing.  but this should redirect to the 403.html in public
   def ip_filter
+    "Magic happens here in Firewool::Hook#ip_filter"
+    
     # if no allowed ranges match, then deny
     # if !ip_allow?(request.remote_ip)
       # render :text => "Public Access Denied.", :status => 403
     # end
-    "Magic happens here in Firewool::Hook#ip_filter"
+    if !ip_allow?(request.remote_ip)
+      render :text => "Public Access Denied.", :status => 403
+    end
   end
   
   
