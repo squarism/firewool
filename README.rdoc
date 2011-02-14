@@ -13,8 +13,9 @@ Tested on rails 3.0.4.
 Untested on rails 2.  Engines?
 
 == Configuration
-Add firewool to Gemfile:
+Add firewool and dependency to Gemfile:
   gem 'firewool'
+  gem 'ipaddress'
   
 Create a configuration file in config/firewool.yml
 
@@ -73,7 +74,7 @@ If we just want to match one IP we can use the /32 or just specify the IP by its
   5.6.0.0/24      (matches 5.6.0.*)
   5.6.7.0/24      (matches 5.6.7.*)
     
-These are the simplest examples of this notation (called CIDR if you want to read more) but it's enough to build a few use cases.  Let's say we want to allow anyone from our company network but block anyone coming from China.  Our company's external network is 5.6.7.* (ie: what users see when they go to whatismyip.com from inside their network) and let's say that China's national proxy is 58.14.0.0.  This would be our firewool.yml config:
+These are the simplest examples of this notation (called CIDR if you want to read more) but it's enough to build a few use cases.  Let's say we want to allow anyone from our company network but block anyone coming from Evil Hackers' Inc.  Our company's external network is 5.6.7.* (ie: what users see when they go to whatismyip.com from inside their network) and let's say that Evil Hackers' proxy is 58.14.0.0.  This would be our firewool.yml config:
   production:
     ip_restriction: true
     allow: [ 5.6.7.0/24 ]
