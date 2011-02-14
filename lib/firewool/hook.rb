@@ -1,18 +1,17 @@
 #p "Hook loaded."
 
+# class Module
+#   def redefine_const(name, value)
+#     __send__(:remove_const, name) if const_defined?(name)
+#     const_set(name, value)
+#   end
+# end
+
 module Firewool::Hook
   FIREWOOL_CONFIG = YAML.load_file("#{Rails.root.to_s}/config/firewool.yml")
     
-  def load_config
-      firewool_config = "AWESOME"
-  end
-
-  def self.extended(base)
-    # puts "Hook INCLUDED."
-    # self.load_config
-  end
-  
-  
+  # TODO: opinionated.  provide instructions on how to forget about this filter
+  # and redirect to their own thing.  but this should redirect to the 403.html in public
   def ip_filter
     # if no allowed ranges match, then deny
     # if !ip_allow?(request.remote_ip)
@@ -60,6 +59,7 @@ module Firewool::Hook
     end
   end
   
+  #-----------------------------------------------------------------------------------------------
   private
   def in_range?(range, ip)
     range.each do |r|
@@ -70,14 +70,5 @@ module Firewool::Hook
     end
     return false
   end
-  
-  # def acts_as_awesome(*args)
-  #   p "hook called"
-  #   options = args.extract_options!
-  #   include Firewool::InstanceMethods
-  #   p " => instace methods added"
-  #   before_filter :an_awesome_filter
-  #   p " => filter added"
-  # end
-  
+    
 end

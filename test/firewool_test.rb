@@ -9,12 +9,6 @@ class FirewoolTest < ActionController::TestCase
   t_obj = { "ip_restriction" => "true", "allow" => ["0.0.0.0"], "deny" => ["13.13.13.13"] }
   default_allow_conf_file = YAML::dump( t_obj )
   
-  # default_allow_conf_file = YAML::parse({
-  #   :ip_restriction => true,
-  #   :allow => ["0.0.0.0"],
-  #   :deny => ["13.13.13.13"]
-  # })
- 
   context "The controller" do
     should "respond to method from Hook module" do
       assert DummyController.respond_to? :ip_filter
@@ -30,15 +24,26 @@ class FirewoolTest < ActionController::TestCase
   
   context "The Firewool" do
     should "allow valid IPs" do
-      assert_equal DummyController.ip_allow?("192.168.0.1"), true
+      assert_equal true, DummyController.ip_allow?("192.168.0.1")
     end
   end
 
   context "The Firewool" do
     should "block invalid IPs" do
-      assert_equal DummyController.ip_allow?("172.168.0.1"), false
-      assert_equal DummyController.ip_allow?("12.168.0.1"), false
-      assert_equal DummyController.ip_allow?("0.0.0.0"), false
+      # reset the test, this is weird, I thought this would go in order
+      DummyController::Hook::FIREWOOL_CONFIG[Rails.env]["allow"] = ["192.168.0.0/16"]
+      assert_equal false, DummyController.ip_allow?("172.168.0.1")
+      assert_equal false, DummyController.ip_allow?("12.168.0.1")
+      assert_equal false, DummyController.ip_allow?("0.0.0.0")
+    end
+  end
+  
+  context "The Firewool" do
+    puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
+    should "allow valid IPs when using a default allow" do
+      DummyController::Hook::FIREWOOL_CONFIG[Rails.env]["allow"] = ["0.0.0.0"]
+      puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
+      assert_equal DummyController.ip_allow?("12.168.0.1"), true
     end
   end
        
