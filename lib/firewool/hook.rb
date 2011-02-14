@@ -1,7 +1,7 @@
 p "Hook loaded."
 
 module Firewool::Hook
-  FIREWOOL_CONFIG = YAML.load_file("#{Rails.root.to_s}/config/firewool_config.yml")
+  FIREWOOL_CONFIG = YAML.load_file("#{Rails.root.to_s}/config/firewool.yml")
     
   def load_config
       firewool_config = "AWESOME"

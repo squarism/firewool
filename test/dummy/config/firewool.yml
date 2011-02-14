@@ -1,0 +1,17 @@
+# config/firewool.yml
+# Application specific global settings here
+# changing any valves requires app server restart (apache/webrick/etc)
+
+development:
+    ip_restriction: true
+    allow: [ 192.168.0.0/16 ]
+    deny:  [ 172.16.0.0/16 ]
+
+test:
+    ip_restriction: false
+    allow: [ 192.168.0.0/16 ]
+
+production:
+    ip_restriction: true
+    allow: [ 1.1.0.0/16, 1.2.0.0/16, 1.3.0.0/16 ]
+    deny:  [ 172.16.0.0/16 ]
