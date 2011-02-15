@@ -9,51 +9,54 @@ Firewool is an IP firewall for rails.  You set what IPs to block and what IPs to
 == Install
 gem install firewool
 
-Tested on rails 3.0.4.
-Untested on rails 2.  Engines?
+- Tested on rails 3.0.4.
+- Untested on rails 2.x.  Probably won't work because no engines.
 
 == Configuration
 Add firewool and dependency to Gemfile:
-  gem 'firewool'
-  gem 'ipaddress'
+ gem 'firewool'
+ gem 'ipaddress'
   
 Create a configuration file in config/firewool.yml
 
-	# config/firewool.yml
-	# changing any valves requires app server restart (apache/webrick/etc)
+ # config/firewool.yml
+ # changing any valves requires app server restart (apache/webrick/etc)
 	
-	development:
-	    ip_restriction: true
-	    allow: [ 192.168.0.0/16 ]
+ development:
+   ip_restriction: true
+	 allow: [ 192.168.0.0/16 ]
 
-	test:
-	    ip_restriction: false
+ test:
+   ip_restriction: false
 
-	production:
-	    ip_restriction: true
-	    allow: [ 1.1.0.0/16, 1.2.0.0/16, 1.3.0.0/16 ]
-	    deny:  [ 10.50.0.0/16 ]
+ production:
+   ip_restriction: true
+   allow: [ 1.1.0.0/16, 1.2.0.0/16, 1.3.0.0/16 ]
+   deny:  [ 10.50.0.0/16 ]
 
 
 Add these lines to your controller you want to protect:
 
-	class DummyController < ApplicationController
-	  include Firewool
-	  acts_as_firewalled
-	  before_filter :ip_filter
+ class DummyController < ApplicationController
+   include Firewool
+   acts_as_firewalled
+   before_filter :ip_filter
 
 
 Optionally, you can just filter certain actions like any filter:
-  before_filter :ip_filter, :only => [:admin, :secret]
+ before_filter :ip_filter, :only => [:admin, :secret]
 
 == About
-Firewool has an implicit deny.  This means that Firewool does the following evalation:
-  Deny first
-  Allow all in allow list
-  Deny all in deny list
+Firewool has an implicit deny by default.  This means that Firewool does the following evalation:
+ Deny first
+ Allow all in allow list
+ Deny all in deny list
 
-This allows you to have security by default, a whitelist and then exceptions to that whitelist.  However, sometimes you want a default allow and only exceptions to that rule.  In that case, use an allow like this:
-  allow: [0.0.0.0]
+This allows you to have security by default, a whitelist and then exceptions to that whitelist.  However, sometimes you want a default allow and only exceptions to that rule.  In that case, use an allow with 0.0.0.0 like this:
+ allow: [ 0.0.0.0 ]
+ deny:  [ whatever ]
+
+So then firewool will do allow -> deny.
 
 IPs can be spoofed so in the case of strong security, you'll want to use this with one or more factor authentication.
 
@@ -61,30 +64,32 @@ IPs can be spoofed so in the case of strong security, you'll want to use this wi
 So how do I write the rules when I'm not a network guy?  No problem, let's go through some examples.
 
 First, the IP is four numbers separated by periods.  Each number is called an ocet.  The slash number (like /16 up above) is how many octets match.  So to match every usable IP from 10.0.0.1 to 10.0.0.254, we can just say:
-  10.0.0.0/24 (matches 10.0.0.*)
-    10.0.0.1      (match)
-    10.0.0.204    (match)
-    10.0.1.1      (no match)
-    7.8.9.10      (no match)
+ 10.0.0.0/24 (matches 10.0.0.*)
+   10.0.0.1      (match)
+   10.0.0.204    (match)
+   10.0.1.1      (no match)
+   7.8.9.10      (no match)
 
 If we just want to match one IP we can use the /32 or just specify the IP by itself.
-  192.168.0.1/32  (matches only 192.168.0.1)
-  192.168.0.1     (matches only 192.168.0.1, same meaning as /32)
-  5.0.0.0/8       (matches 5.*.*.*)
-  5.6.0.0/16      (matches 5.6.*.*)
-  5.6.0.0/24      (matches 5.6.0.*)
-  5.6.7.0/24      (matches 5.6.7.*)
+ 192.168.0.1/32  (matches only 192.168.0.1)
+   192.168.0.1     (matches only 192.168.0.1, same meaning as /32)
+   5.0.0.0/8       (matches 5.*.*.*)
+   5.6.0.0/16      (matches 5.6.*.*)
+   5.6.0.0/24      (matches 5.6.0.*)
+   5.6.7.0/24      (matches 5.6.7.*)
     
 These are the simplest examples of this notation (called CIDR if you want to read more) but it's enough to build a few use cases.  Let's say we want to allow anyone from our company network but block anyone coming from Evil Hackers' Inc.  Our company's external network is 5.6.7.* (ie: what users see when they go to whatismyip.com from inside their network) and let's say that Evil Hackers' proxy is 58.14.0.0.  This would be our firewool.yml config:
-  production:
-    ip_restriction: true
-    allow: [ 5.6.7.0/24 ]
-    deny:  [ 58.14.0.0/16 ]
+ production:
+   ip_restriction: true
+   allow: [ 5.6.7.0/24 ]
+   deny:  [ 58.14.0.0/16 ]
     
 Now we'd want to be careful that 5.6.7.* was really where our users are coming from.  If people that we want to keep out are coming from 5.6.7.200 then we'd want to tighten up our rule a little bit and not allow all of the 5.6.7.0 network in.  Maybe we research what our IP block really is, or add only the IPs we know about as /32 IPs.
 
+As a special case, 0.0.0.0 means *.*.*.*, or all IPs.
+
 == Pretty up
-If 403.html doesn't exist in your public directory, then a blocked user will simply see "Public Access Denied." which isn't that great.  Create a 403.html file in public, you can use this {403.html template as an example}[test/dummy/app/public/403.html].
+If 403.html doesn't exist in your public directory, then a blocked user will simply see "Public Access Denied." which isn't that great.  Create a 403.html file in public, you can use this {403.html template as an example}[https://github.com/squarism/firewool/blob/master/test/dummy/public/403.html].
 
 == Thanks to
 Bluemonk for his awesome ipaddress gem.
