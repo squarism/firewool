@@ -83,5 +83,8 @@ These are the simplest examples of this notation (called CIDR if you want to rea
     
 Now we'd want to be careful that 5.6.7.* was really where our users are coming from.  If people that we want to keep out are coming from 5.6.7.200 then we'd want to tighten up our rule a little bit and not allow all of the 5.6.7.0 network in.  Maybe we research what our IP block really is, or add only the IPs we know about as /32 IPs.
 
+== Pretty up
+If 403.html doesn't exist in your public directory, then a blocked user will simply see "Public Access Denied." which isn't that great.  Create a 403.html file in public, you can use this {403.html template as an example}[test/dummy/app/public/403.html].
+
 == Thanks to
 Bluemonk for his awesome ipaddress gem.

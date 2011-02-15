@@ -1,19 +1,13 @@
 require 'active_support/core_ext'
 require 'ipaddress'
 
-# p "loading main"
+# rails engine setup
 require File.join(File.dirname(__FILE__), "firewool/railtie.rb")
 
 module Firewool
   
   def self.included(base)
     base.extend(ClassMethods)
-    # puts "RESPOND TO: #{base.respond_to?(:firewool_config)}"
-    # puts "RESPOND TO: #{base.respond_to?(:bar)}"
-    # puts "RESPOND TO: #{base.respond_to?(:bleep)}"
-    # n = base.new
-    # puts n
-    # puts "RESPOND TO: #{n.respond_to?(:bar)}"
   end
   
   class Config
@@ -43,22 +37,14 @@ module Firewool
     # TODO: opinionated.  provide instructions on how to forget about this filter
     # and redirect to their own thing.  but this should redirect to the 403.html in public
     def ip_filter
-      "Magic happens here in Firewool::Hook#ip_filter"
-
       # if no allowed ranges match, then deny
       if !ip_allow?(request.remote_ip)
-        render :file => "#{RAILS_ROOT}/public/403.html", :layout => false, :status => 403
-        # render :text => "Public Access Denied.", :status => 403
+        if File.exists? "#{::Rails.root.to_s}/public/403.html"
+          render :file => "#{::Rails.root.to_s}/public/403.html", :layout => false, :status => 403
+        else
+          render :text => "Public Access Denied.", :status => 403
+        end
       end
-
-      puts "REQUEST OBJECT: #{request}"
-      #puts "REQUEST.ENV: #{@request.env['HTTP_X_FORWARDED_FOR']}"
-      # puts "REMOTE IP: #{request.remote_ip}"
-      # puts "REMOTE_ADDR: #{request.env['REMOTE_ADDR']}"
-
-      #if !ip_allow?(request.remote_ip)
-      #  render :text => "Public Access Denied.", :status => 403
-      #end
     end
 
     def ip_allow?(ip)
@@ -72,22 +58,20 @@ module Firewool
 
         # default allow check
         if allowed_ranges.include?("0.0.0.0")
-          # default_allow makes access_decision true first
+          # default_allow done with access_decision true first
+          # allow -> deny
           access_decision = true
         else
-          # default_allow makes access_decision false first
+          # without default_allow is access_decision is false by default
+          # deny -> allow -> deny
           access_decision = false
         end
 
         client_ip = IPAddress::parse ip
 
-        # puts "ALLOWED RANGES: #{allowed_ranges}"
-        # puts "DENIED RANGES: #{denied_ranges}"
-
         # apply allow rules
         if !allowed_ranges.nil?
           if in_range?(allowed_ranges, client_ip)
-            # puts "ALLOWED"
             access_decision = true
           end
         end
@@ -95,7 +79,6 @@ module Firewool
         # apply deny rules      
         if !denied_ranges.nil?
           if in_range?(denied_ranges, client_ip)
-            #puts "DENIED"
             access_decision = false
           end
         end
