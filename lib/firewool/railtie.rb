@@ -8,7 +8,7 @@ module Firewool
   class Railtie < Rails::Railtie
     config.to_prepare do
       # p "hook added"
-      ApplicationController.send(:extend, Firewool::Hook)
+      #ApplicationController.send(:extend, Firewool::Hook)
     end
   end
 end

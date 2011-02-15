@@ -1,4 +1,4 @@
-#p "Hook loaded."
+p "Hook loaded."
 
 # class Module
 #   def redefine_const(name, value)
@@ -19,9 +19,15 @@ module Firewool::Hook
     # if !ip_allow?(request.remote_ip)
       # render :text => "Public Access Denied.", :status => 403
     # end
-    if !ip_allow?(request.remote_ip)
-      render :text => "Public Access Denied.", :status => 403
-    end
+    
+    puts "REQUEST OBJECT: #{request}"
+    #puts "REQUEST.ENV: #{@request.env['HTTP_X_FORWARDED_FOR']}"
+    # puts "REMOTE IP: #{request.remote_ip}"
+    # puts "REMOTE_ADDR: #{request.env['REMOTE_ADDR']}"
+    
+    #if !ip_allow?(request.remote_ip)
+    #  render :text => "Public Access Denied.", :status => 403
+    #end
   end
   
   
@@ -36,26 +42,30 @@ module Firewool::Hook
         # default_allow makes access_decision true first
         access_decision = true
       else
-        # default_allow makes access_decision true first
+        # default_allow makes access_decision false first
         access_decision = false
       end
       
       client_ip = IPAddress::parse ip
       
       
-      #puts "ALLOWED RANGES: #{allowed_ranges}"
-      #puts "DENIED RANGES: #{denied_ranges}"
+      puts "ALLOWED RANGES: #{allowed_ranges}"
+      puts "DENIED RANGES: #{denied_ranges}"
       
       # apply allow rules
-      if in_range?(allowed_ranges, client_ip)
-        #puts "ALLOWED"
-        access_decision = true
+      if !allowed_ranges.nil?
+        if in_range?(allowed_ranges, client_ip)
+          #puts "ALLOWED"
+          access_decision = true
+        end
       end
 
       # apply deny rules      
-      if in_range?(denied_ranges, client_ip)
-        #puts "DENIED"
-        access_decision = false
+      if !denied_ranges.nil?
+        if in_range?(denied_ranges, client_ip)
+          #puts "DENIED"
+          access_decision = false
+        end
       end
       
       # return our shizz
