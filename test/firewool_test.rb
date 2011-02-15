@@ -34,23 +34,22 @@ class FirewoolTest < ActionController::TestCase
     end
   end
 
-  # context "The Firewool" do
-  #   should "block invalid IPs" do
-  #     # reset the test, this is weird, I thought this would go in order
-  #     DummyController::Hook::FIREWOOL_CONFIG[Rails.env]["allow"] = ["192.168.0.0/16"]
-  #     assert_equal false, DummyController.ip_allow?("172.168.0.1")
-  #     assert_equal false, DummyController.ip_allow?("12.168.0.1")
-  #     assert_equal false, DummyController.ip_allow?("0.0.0.0")
-  #   end
-  # end
+  context "The Firewool" do
+    should "block invalid IPs" do
+      # reset the test, this is weird, I thought this would go in order
+      dc.class.firewool_config[Rails.env]["allow"] = ["192.168.0.0/16"]
+      assert_equal false, dc.ip_allow?("172.168.0.1")
+      assert_equal false, dc.ip_allow?("12.168.0.1")
+      assert_equal false, dc.ip_allow?("0.0.0.0")
+    end
+  end
   
-  # context "The Firewool" do
-  #   puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
-  #   should "allow valid IPs when using a default allow" do
-  #     DummyController::Hook::FIREWOOL_CONFIG[Rails.env]["allow"] = ["0.0.0.0"]
-  #     #puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
-  #     assert_equal DummyController.ip_allow?("12.168.0.1"), true
-  #   end
-  # end
+  context "The Firewool" do
+    should "allow valid IPs when using a default allow" do
+      dc.class.firewool_config[Rails.env]["allow"] = ["0.0.0.0"]
+      #puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
+      assert_equal dc.ip_allow?("12.168.0.1"), true
+    end
+  end
        
 end
