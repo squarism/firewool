@@ -8,19 +8,18 @@ class FirewoolTest < ActionController::TestCase
   # http://guides.rubyonrails.org/action_controller_overview.html
   # So let's create an instance to test with.
   dc = DummyController.new
- 
-  #conf_file = DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
+
+  # get our configuration, which we'll change later for certain tests
   conf_file = dc.class.firewool_config[Rails.env]
   
-  t_obj = { "ip_restriction" => "true", "allow" => ["0.0.0.0"], "deny" => ["13.13.13.13"] }
-  default_allow_conf_file = YAML::dump( t_obj )
-  
+  # test basic module includes/extends  
   context "The controller" do
     should "respond to instance method from module" do
       assert dc.respond_to? :ip_filter
     end
   end
   
+  # test reading firewool.yml config file
   context "The Firewool" do
     should "have the configuration loaded" do
       assert conf_file.key?("ip_restriction"), "Should have the ip_restriction in firewool conf file"
@@ -28,28 +27,33 @@ class FirewoolTest < ActionController::TestCase
     end
   end
   
+  # test policy enforcement
   context "The Firewool" do
-    should "allow valid IPs" do
-      assert_equal true, dc.ip_allow?("192.168.0.1")
-    end
-  end
-
-  context "The Firewool" do
-    should "block invalid IPs" do
-      # reset the test, this is weird, I thought this would go in order
+    should "allow valid IPs while blocking invalid IPs" do
+      # reset the configuration, this is weird that I have to 
+      # , I thought this would go in order
       dc.class.firewool_config[Rails.env]["allow"] = ["192.168.0.0/16"]
       assert_equal false, dc.ip_allow?("172.168.0.1")
       assert_equal false, dc.ip_allow?("12.168.0.1")
       assert_equal false, dc.ip_allow?("0.0.0.0")
+      assert_equal true, dc.ip_allow?("192.168.0.1")
     end
   end
   
   context "The Firewool" do
     should "allow valid IPs when using a default allow" do
       dc.class.firewool_config[Rails.env]["allow"] = ["0.0.0.0"]
-      #puts DummyController::Hook::FIREWOOL_CONFIG[Rails.env]
-      assert_equal dc.ip_allow?("12.168.0.1"), true
+      assert_equal true, dc.ip_allow?("12.168.0.1")
     end
   end
-       
+  
+  context "The Firewool" do
+    should "allow and disallow correctly with a default allow" do
+      dc.class.firewool_config[Rails.env]["allow"] = ["0.0.0.0"]
+      # puts dc.class.firewool_config[Rails.env]
+      assert_equal true, dc.ip_allow?("12.168.0.1")
+      assert_equal true, dc.ip_allow?("192.168.0.1")
+      assert_equal false, dc.ip_allow?("172.16.0.1")
+    end
+  end
 end
