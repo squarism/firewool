@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.authors     = ["Chris Dillon"]
   s.email       = ["squarism@gmail.com"]
   s.homepage    = "http://github.com/squarism/firewool"
-  s.summary     = %q{Firewalling gem for rails.  Baa.}
-  s.description = %q{Provides ip filtering based on a black/white list.}
+  s.summary     = %q{Firewool is an IP firewall for rails 3.  Baa.}
+  s.description = %q{Firewool blocks and allows IPs to your controller actions.}
 
   s.rubyforge_project = "firewool"
 
