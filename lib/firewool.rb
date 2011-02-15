@@ -46,9 +46,10 @@ module Firewool
       "Magic happens here in Firewool::Hook#ip_filter"
 
       # if no allowed ranges match, then deny
-      # if !ip_allow?(request.remote_ip)
+      if !ip_allow?(request.remote_ip)
+        render :file => "#{RAILS_ROOT}/public/403.html", :layout => false, :status => 403
         # render :text => "Public Access Denied.", :status => 403
-      # end
+      end
 
       puts "REQUEST OBJECT: #{request}"
       #puts "REQUEST.ENV: #{@request.env['HTTP_X_FORWARDED_FOR']}"
@@ -80,13 +81,13 @@ module Firewool
 
         client_ip = IPAddress::parse ip
 
-        puts "ALLOWED RANGES: #{allowed_ranges}"
-        puts "DENIED RANGES: #{denied_ranges}"
+        # puts "ALLOWED RANGES: #{allowed_ranges}"
+        # puts "DENIED RANGES: #{denied_ranges}"
 
         # apply allow rules
         if !allowed_ranges.nil?
           if in_range?(allowed_ranges, client_ip)
-            #puts "ALLOWED"
+            # puts "ALLOWED"
             access_decision = true
           end
         end
