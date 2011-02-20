@@ -13,8 +13,13 @@ module Firewool
   class Config
     attr_reader :yaml_config
     
+    # TODO: Ugh, globals?  Really?  How can I cache the config in case someone
+    # has a million controllers that include Firewool?  This gets hit every include Module.
     def initialize
-      @yaml_config = YAML.load_file("#{Rails.root.to_s}/config/firewool.yml")
+      if $firewool_config.nil?
+        @yaml_config = YAML.load_file("#{Rails.root.to_s}/config/firewool.yml")
+        $firewool_config = @yaml_config
+      end      
     end
   end
 

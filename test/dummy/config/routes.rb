@@ -1,4 +1,6 @@
 Dummy::Application.routes.draw do
+  get "foo/index"
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
@@ -6,6 +8,7 @@ Dummy::Application.routes.draw do
   #   match 'products/:id' => 'catalog#view'
   # Keep in mind you can assign values other than :controller and :action
   match 'dummy' => 'dummy#index'
+  match 'foo' => 'foo#index'
 
   # Sample of named route:
   #   match 'products/:id/purchase' => 'catalog#purchase', :as => :purchase

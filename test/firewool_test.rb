@@ -56,3 +56,19 @@ class FirewoolTest < ActionController::TestCase
     end
   end
 end
+
+
+class FooTest < ActionController::TestCase
+  tests FooController
+  fc = FooController.new
+  
+  conf_file = $firewool_config[Rails.env]
+  
+  # test reading firewool.yml config file
+  context "The Firewool" do
+    should "have the configuration loaded" do
+      assert conf_file.key?("ip_restriction"), "Should have the ip_restriction in firewool conf file"
+      assert conf_file.key?("allow"), "Should have the ip_ranges_allowed in firewool conf file"
+    end
+  end
+end
