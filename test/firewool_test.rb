@@ -26,6 +26,8 @@ class FirewoolTest < ActionController::TestCase
       assert conf_file.key?("allow"), "Should have the ip_ranges_allowed in firewool conf file"
     end
   end
+  #     # this is weird that I have to reset the configuration,
+  #     # I thought this would go in order
   
   # test policy enforcement
   context "The Firewool" do
