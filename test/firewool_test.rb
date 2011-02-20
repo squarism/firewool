@@ -26,14 +26,12 @@ class FirewoolTest < ActionController::TestCase
       assert conf_file.key?("allow"), "Should have the ip_ranges_allowed in firewool conf file"
     end
   end
-  #     # this is weird that I have to reset the configuration,
-  #     # I thought this would go in order
   
   # test policy enforcement
   context "The Firewool" do
     should "allow valid IPs while blocking invalid IPs" do
-      # reset the configuration, this is weird that I have to 
-      # , I thought this would go in order
+      # this is weird that I have to reset the configuration,
+      # I thought this would go in order
       dc.class.firewool_config[Rails.env]["allow"] = ["192.168.0.0/16"]
       assert_equal false, dc.ip_allow?("172.168.0.1")
       assert_equal false, dc.ip_allow?("12.168.0.1")
@@ -52,7 +50,6 @@ class FirewoolTest < ActionController::TestCase
   context "The Firewool" do
     should "allow and disallow correctly with a default allow" do
       dc.class.firewool_config[Rails.env]["allow"] = ["0.0.0.0"]
-      # puts dc.class.firewool_config[Rails.env]
       assert_equal true, dc.ip_allow?("12.168.0.1")
       assert_equal true, dc.ip_allow?("192.168.0.1")
       assert_equal false, dc.ip_allow?("172.16.0.1")
