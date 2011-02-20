@@ -6,7 +6,7 @@ module Firewool
     end
 
     def firewool_config
-      @firewool_config.yaml_config || self.superclass.instance_variable_get('@firewool_config').yaml_config
+      @firewool_config.yaml_config
     end
   end
 end
