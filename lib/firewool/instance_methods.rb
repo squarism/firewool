@@ -14,7 +14,7 @@ module Firewool
     end
 
     def ip_allow?(ip)
-      firewool_config = self.class.firewool_config[Rails.env]
+      firewool_config = self.class.firewool_config.yaml_config[Rails.env]
     
       if firewool_config['ip_restriction']
         # get our policy from the conf file
