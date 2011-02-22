@@ -23,7 +23,7 @@ module Firewool
     end
 
     def yaml_config
-      @@yaml_config ||= self.send(:load_config)
+      @@yaml_config ||= self.load_config
     end
     
     # TODO: Ugh, globals?  Really?  How can I cache the config in case someone
