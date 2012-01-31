@@ -19,12 +19,12 @@ gem install firewool
 == Configuration
 Add firewool dependency to Gemfile:
  gem 'firewool'
-  
+
 Create a configuration file in config/firewool.yml
 
  # config/firewool.yml
  # changing any values requires app server restart (Apache/Webrick/etc..)
-	
+
  development:
    ip_restriction: true
    allow: [ 127.0.0.1 ]
@@ -83,13 +83,13 @@ Some more examples:
  5.6.0.0/16      (matches 5.6.*.*)
  5.6.0.0/24      (matches 5.6.0.*)
  5.6.7.0/24      (matches 5.6.7.*)
-    
+
 These are the simplest examples of this notation (called CIDR if you want to read more) but it's enough to build a few use cases.  Let's say we want to allow our customers in but block anyone coming from Evil Hackers' Inc.  Our customer's external network is 5.6.7.* (ie: what they see when they go to whatismyip.com) and let's say that Evil Hackers' proxy is 58.14.0.0.  This would be our config/firewool.yml:
  production:
    ip_restriction: true
    allow: [ 5.6.7.0/24 ]
    deny:  [ 58.14.0.0/16 ]
-    
+
 Now we'd want to be careful that 5.6.7.* was really where our users are coming from.  If another group of people that we want to keep out are coming from 5.6.7.200 then we'd want to tighten up our rule a little bit and not allow all of the 5.6.7.* network in because .200 is in 5.6.7.*.  So we would research what our customer's IP block really is, or add only the IPs we know about as individual IPs.
 
 As a special case, 0.0.0.0 means *.*.*.*, or all IPs.  Also a special case, 127.0.0.1 means localhost which is good to leave in your development allow section so you can develop your app with firewool on.

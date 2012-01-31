@@ -15,7 +15,7 @@ module Firewool
 
     def ip_allow?(ip)
       firewool_config = self.class.firewool_config.yaml_config[Rails.env]
-    
+
       if firewool_config['ip_restriction']
         # get our policy from the conf file
         allowed_ranges = firewool_config['allow']
@@ -41,7 +41,7 @@ module Firewool
           end
         end
 
-        # apply deny rules      
+        # apply deny rules
         if !denied_ranges.nil?
           if in_range?(denied_ranges, client_ip)
             access_decision = false
