@@ -1,4 +1,7 @@
 == Firewool
+
+*abandoned* See (rack-attack)[https://github.com/kickstarter/rack-attack] for a nice alternative with more features.
+
 Firewool is an IP firewall for Rails.  You set what IPs to block and what IPs to allow.  Specifics below.
 
 == Why would I need this?
